@@ -50,16 +50,16 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
-      name: "Pantheon Ring",
-      price: "€2,450",
+      name: "Kani Pashmina Shawl",
+      price: "₹28,500",
       quantity: 1,
       image: pantheonImage,
-      size: "54 EU / 7 US"
+      size: "200cm x 100cm"
     },
     {
       id: 2,
-      name: "Eclipse Earrings", 
-      price: "€1,850",
+      name: "Silk Kurta", 
+      price: "₹12,500",
       quantity: 1,
       image: eclipseImage
     }
@@ -78,16 +78,16 @@ const Checkout = () => {
   };
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = parseFloat(item.price.replace('€', '').replace(',', ''));
+    const price = parseFloat(item.price.replace('₹', '').replace(',', ''));
     return sum + (price * item.quantity);
   }, 0);
 
   const getShippingCost = () => {
     switch (shippingOption) {
       case "express":
-        return 15;
+        return 500;
       case "overnight":
-        return 35;
+        return 1000;
       default:
         return 0; // Standard shipping is free
     }
@@ -220,7 +220,7 @@ const Checkout = () => {
                 <div className="border-t border-muted-foreground/20 mt-4 pt-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="text-foreground">€{subtotal.toLocaleString()}</span>
+                    <span className="text-foreground">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </div>
@@ -524,7 +524,7 @@ const Checkout = () => {
                     </Label>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    €15 • 1-2 business days
+                    ₹500 • 2-3 business days
                   </div>
                 </div>
 
@@ -536,7 +536,7 @@ const Checkout = () => {
                     </Label>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    €35 • Next business day
+                    ₹1,000 • Next business day
                   </div>
                 </div>
               </RadioGroup>
@@ -630,17 +630,17 @@ const Checkout = () => {
                   <div className="bg-muted/10 p-6 rounded-none border border-muted-foreground/20 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="text-foreground">€{subtotal.toLocaleString()}</span>
+                      <span className="text-foreground">₹{subtotal.toLocaleString('en-IN')}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Shipping</span>
                       <span className="text-foreground">
-                        {shipping === 0 ? "Free" : `€${shipping}`}
+                        {shipping === 0 ? "Free" : `₹${shipping.toLocaleString('en-IN')}`}
                       </span>
                     </div>
                     <div className="flex justify-between text-lg font-medium border-t border-muted-foreground/20 pt-3">
                       <span className="text-foreground">Total</span>
-                      <span className="text-foreground">€{total.toLocaleString()}</span>
+                      <span className="text-foreground">₹{total.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
 
@@ -649,7 +649,7 @@ const Checkout = () => {
                     disabled={isProcessing || !paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv || !paymentDetails.cardholderName}
                     className="w-full rounded-none h-12 text-base"
                   >
-                    {isProcessing ? "Processing..." : `Complete Order • €${total.toLocaleString()}`}
+                    {isProcessing ? "Processing..." : `Complete Order • ₹${total.toLocaleString('en-IN')}`}
                   </Button>
                 </div>
               ) : (

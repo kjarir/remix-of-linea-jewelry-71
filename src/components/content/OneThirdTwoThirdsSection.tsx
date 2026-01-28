@@ -7,41 +7,41 @@ const OneThirdTwoThirdsSection = () => {
     <section className="w-full mb-16 px-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <Link to="/category/rings" className="block">
+          <Link to="/category/kurtas" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
               <img 
                 src={organicEarring} 
-                alt="Artisan crafted jewelry" 
+                alt="Traditional Kashmiri Kurtas" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
           </Link>
           <div className="">
             <h3 className="text-sm font-normal text-foreground mb-1">
-              Artisan Craft
+              Kurta Collection
             </h3>
             <p className="text-sm font-light text-foreground">
-              Handcrafted pieces with meticulous attention to detail
+              Traditional embroidered kurtas with intricate Kashmiri needlework
             </p>
           </div>
         </div>
 
         <div className="lg:col-span-2">
-          <Link to="/category/necklaces" className="block">
+          <Link to="/category/stoles" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
               <img 
                 src={circularCollection} 
-                alt="Circular jewelry collection" 
+                alt="Kashmiri Stoles and Wraps" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
           </Link>
           <div className="">
             <h3 className="text-sm font-normal text-foreground mb-1">
-              Circular Elements
+              Stoles & Wraps
             </h3>
             <p className="text-sm font-light text-foreground">
-              Geometric perfection meets contemporary minimalism
+              Lightweight elegance with delicate embroidery and prints
             </p>
           </div>
         </div>

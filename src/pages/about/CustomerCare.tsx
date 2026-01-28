@@ -21,25 +21,25 @@ const CustomerCare = () => {
         <main className="w-full lg:w-[70vw] lg:ml-auto px-6">
         <PageHeader 
           title="Customer Care" 
-          subtitle="We're here to help you with all your jewelry needs"
+          subtitle="We're here to help you with all your textile needs"
         />
         
         <ContentSection title="Contact Information">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="space-y-4">
               <h3 className="text-lg font-light text-foreground">Phone</h3>
-              <p className="text-muted-foreground">+1 (555) 123-4567</p>
-              <p className="text-sm text-muted-foreground">Mon-Fri: 9AM-6PM EST<br />Sat: 10AM-4PM EST</p>
+              <p className="text-muted-foreground">+91 (194) 250-1234</p>
+              <p className="text-sm text-muted-foreground">Mon-Sat: 10AM-7PM IST</p>
             </div>
             <div className="space-y-4">
               <h3 className="text-lg font-light text-foreground">Email</h3>
-              <p className="text-muted-foreground">care@lineajewelry.com</p>
+              <p className="text-muted-foreground">care@mannatshawls.com</p>
               <p className="text-sm text-muted-foreground">Response within 24 hours</p>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-light text-foreground">Live Chat</h3>
+              <h3 className="text-lg font-light text-foreground">WhatsApp</h3>
               <Button variant="outline" className="rounded-none">
-                Start Chat
+                Chat with Us
               </Button>
               <p className="text-sm text-muted-foreground">Available during business hours</p>
             </div>
@@ -53,7 +53,7 @@ const CustomerCare = () => {
                 What are your shipping options and timeframes?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                We offer free standard shipping (3-5 business days) on orders over $500. Express shipping (1-2 business days) is available for $25. All orders are fully insured and require signature confirmation.
+                We offer free shipping within India on orders over ₹10,000 (5-7 business days). Express shipping (2-3 business days) is available for ₹500. International shipping is available to select countries with delivery in 10-15 business days.
               </AccordionContent>
             </AccordionItem>
 
@@ -62,43 +62,43 @@ const CustomerCare = () => {
                 What is your return and exchange policy?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                We offer a 30-day return policy for unworn items in original condition. Custom and engraved pieces are final sale. Returns are free with our prepaid return label.
+                We offer a 15-day return policy for unused items in original condition with tags attached. Custom-made and personalized items are final sale. Returns within India are free with our prepaid return label.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="warranty" className="border border-border rounded-lg px-6">
+            <AccordionItem value="authenticity" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="text-left hover:no-underline">
-                What warranty do you offer on your jewelry?
+                How can I verify the authenticity of my purchase?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                All LINEA jewelry comes with a lifetime warranty against manufacturing defects. This includes free repairs for normal wear and tear, stone tightening, and professional cleaning.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="sizing" className="border border-border rounded-lg px-6">
-              <AccordionTrigger className="text-left hover:no-underline">
-                Can I resize my jewelry after purchase?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                Yes, we offer free ring resizing within 60 days of purchase (up to 2 sizes). Additional resizing is available for a service fee. Some designs cannot be resized due to their construction.
+                Every Mannat Shawl's product comes with a certificate of authenticity and a GI (Geographical Indication) tag for genuine Kashmiri products. You can verify authenticity using the unique code on our website.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="care" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="text-left hover:no-underline">
-                How should I care for my LINEA jewelry?
+                How should I care for my Pashmina shawl?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Store pieces separately in soft pouches, avoid contact with chemicals and cosmetics, and clean gently with a soft cloth. We recommend professional cleaning every 6-12 months.
+                Pashmina should be dry cleaned or gently hand washed in cold water with mild detergent. Never wring or twist. Lay flat to dry away from direct sunlight. Store in breathable cotton bags with natural moth repellents.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="authentication" className="border border-border rounded-lg px-6">
+            <AccordionItem value="custom" className="border border-border rounded-lg px-6">
               <AccordionTrigger className="text-left hover:no-underline">
-                How can I verify the authenticity of my jewelry?
+                Do you offer custom orders?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Every LINEA piece comes with a certificate of authenticity and is hallmarked. You can verify authenticity on our website using your unique piece number or contact our customer care team.
+                Yes! We offer custom sizing, color combinations, and personalized embroidery. Custom orders typically take 4-8 weeks depending on the complexity. Contact us for a personalized quote.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="carpet" className="border border-border rounded-lg px-6">
+              <AccordionTrigger className="text-left hover:no-underline">
+                How do I care for my Kashmiri carpet?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Vacuum regularly with a brushless attachment. Rotate the carpet every 6 months for even wear. For stains, blot immediately with cold water. Professional cleaning is recommended every 1-2 years.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

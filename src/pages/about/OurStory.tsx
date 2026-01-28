@@ -18,15 +18,15 @@ const OurStory = () => {
         <main className="w-full lg:w-[70vw] lg:ml-auto px-6">
           <PageHeader 
             title="Our Story" 
-            subtitle="A journey of passion, craftsmanship, and timeless elegance"
+            subtitle="A legacy of Kashmiri craftsmanship passed through generations"
           />
           
           <ContentSection>
             <ImageTextBlock
               image="/founders.png"
-              imageAlt="Company founders"
-              title="Founded on Passion"
-              content="LINEA Jewelry was born from a shared vision of creating timeless pieces that transcend fleeting trends. Our founders, united by their passion for exceptional craftsmanship and sustainable practices, established the brand with a commitment to creating jewelry that tells a story - your story."
+              imageAlt="Kashmiri artisans"
+              title="Founded on Tradition"
+              content="Mannat Shawl's was born from a deep reverence for Kashmir's rich textile heritage. Our founders, descendants of master weavers, established this brand with a commitment to preserving centuries-old techniques while bringing authentic Kashmiri handicrafts to the world."
               imagePosition="left"
             />
           </ContentSection>
@@ -36,13 +36,13 @@ const OurStory = () => {
               <div className="space-y-6">
                 <h3 className="text-xl font-light text-foreground">Traditional Craftsmanship</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Every piece in our collection is meticulously handcrafted by skilled artisans who have honed their craft over generations. We honor traditional techniques while embracing modern innovation, ensuring each piece meets our exacting standards for quality and beauty.
+                  Every piece in our collection is meticulously handcrafted by skilled artisans who have honed their craft over generations. From the delicate Sozni embroidery to the intricate Kani weaving, we honor traditional techniques that have made Kashmiri textiles legendary worldwide.
                 </p>
               </div>
               <div className="space-y-6">
-                <h3 className="text-xl font-light text-foreground">Sustainable Future</h3>
+                <h3 className="text-xl font-light text-foreground">Authentic Materials</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  We believe luxury and sustainability can coexist beautifully. Our commitment to ethical sourcing, recycled materials, and responsible manufacturing practices ensures that every piece you wear contributes to a more sustainable future.
+                  We source only the finest materials - genuine Pashmina from Changthangi goats of Ladakh, pure mulberry silk, and the softest Merino wool. Each material is carefully selected to ensure the highest quality and authenticity in every product.
                 </p>
               </div>
             </div>
@@ -51,21 +51,21 @@ const OurStory = () => {
           <ContentSection title="Our Values">
             <div className="grid md:grid-cols-3 gap-8">
               <div className="space-y-4">
-                <h3 className="text-lg font-light text-foreground">Excellence</h3>
-                <p className="text-muted-foreground">
-                  We pursue perfection in every detail, from the initial design concept to the final polish.
-                </p>
-              </div>
-              <div className="space-y-4">
                 <h3 className="text-lg font-light text-foreground">Authenticity</h3>
                 <p className="text-muted-foreground">
-                  Each piece reflects genuine craftsmanship and tells an authentic story of artistry and care.
+                  Every piece comes with a certificate of authenticity, guaranteeing genuine Kashmiri craftsmanship.
                 </p>
               </div>
               <div className="space-y-4">
-                <h3 className="text-lg font-light text-foreground">Innovation</h3>
+                <h3 className="text-lg font-light text-foreground">Artisan Support</h3>
                 <p className="text-muted-foreground">
-                  We continuously evolve our designs and techniques while honoring timeless aesthetic principles.
+                  We work directly with artisan families, ensuring fair wages and preserving traditional livelihoods.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-lg font-light text-foreground">Heritage Preservation</h3>
+                <p className="text-muted-foreground">
+                  We actively work to preserve and promote traditional Kashmiri weaving and embroidery techniques.
                 </p>
               </div>
             </div>

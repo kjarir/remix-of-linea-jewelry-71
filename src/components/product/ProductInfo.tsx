@@ -31,12 +31,12 @@ const ProductInfo = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to="/category/earrings">Earrings</Link>
+                <Link to="/category/shawls">Shawls</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Pantheon</BreadcrumbPage>
+              <BreadcrumbPage>Kani Pashmina</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -46,11 +46,11 @@ const ProductInfo = () => {
       <div className="space-y-2">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-sm font-light text-muted-foreground mb-1">Earrings</p>
-            <h1 className="text-2xl md:text-3xl font-light text-foreground">Pantheon</h1>
+            <p className="text-sm font-light text-muted-foreground mb-1">Shawls</p>
+            <h1 className="text-2xl md:text-3xl font-light text-foreground">Kani Pashmina</h1>
           </div>
           <div className="text-right">
-            <p className="text-xl font-light text-foreground">€2,850</p>
+            <p className="text-xl font-light text-foreground">₹28,500</p>
           </div>
         </div>
       </div>
@@ -59,22 +59,22 @@ const ProductInfo = () => {
       <div className="space-y-4 py-4 border-b border-border">
         <div className="space-y-2">
           <h3 className="text-sm font-light text-foreground">Material</h3>
-          <p className="text-sm font-light text-muted-foreground">18k Gold Plated Sterling Silver</p>
+          <p className="text-sm font-light text-muted-foreground">100% Pure Pashmina (Changthangi Goat Wool)</p>
         </div>
         
         <div className="space-y-2">
           <h3 className="text-sm font-light text-foreground">Dimensions</h3>
-          <p className="text-sm font-light text-muted-foreground">2.5cm x 1.2cm</p>
+          <p className="text-sm font-light text-muted-foreground">200cm x 100cm (Medium Shawl)</p>
         </div>
         
         <div className="space-y-2">
-          <h3 className="text-sm font-light text-foreground">Weight</h3>
-          <p className="text-sm font-light text-muted-foreground">4.2g per earring</p>
+          <h3 className="text-sm font-light text-foreground">Craft</h3>
+          <p className="text-sm font-light text-muted-foreground">Traditional Kani Weaving, Handloom</p>
         </div>
         
         <div className="space-y-2">
-          <h3 className="text-sm font-light text-foreground">Editor's notes</h3>
-          <p className="text-sm font-light text-muted-foreground italic">"A modern interpretation of classical architecture, these earrings bridge timeless elegance with contemporary minimalism."</p>
+          <h3 className="text-sm font-light text-foreground">Artisan's notes</h3>
+          <p className="text-sm font-light text-muted-foreground italic">"Each Kani shawl takes months to complete, with intricate patterns woven using traditional wooden needles called 'tujis'. This piece features the classic paisley motif, a symbol of fertility and life."</p>
         </div>
       </div>
 
