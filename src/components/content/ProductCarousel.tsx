@@ -25,44 +25,44 @@ interface Product {
 const products: Product[] = [
   {
     id: 1,
-    name: "Pantheon",
-    category: "Earrings",
-    price: "€2,850",
+    name: "Kani Pashmina",
+    category: "Shawls",
+    price: "₹28,500",
     image: pantheonImage,
   },
   {
     id: 2,
-    name: "Eclipse",
-    category: "Bracelets",
-    price: "€3,200",
+    name: "Chinar Silk Carpet",
+    category: "Carpets",
+    price: "₹85,000",
     image: eclipseImage,
   },
   {
     id: 3,
-    name: "Halo",
-    category: "Earrings",
-    price: "€1,950",
+    name: "Sozni Shawl",
+    category: "Shawls",
+    price: "₹45,000",
     image: haloImage,
   },
   {
     id: 4,
-    name: "Oblique",
-    category: "Earrings",
-    price: "€1,650",
+    name: "Embroidered Kurta",
+    category: "Kurtas",
+    price: "₹12,500",
     image: obliqueImage,
   },
   {
     id: 5,
-    name: "Lintel",
-    category: "Earrings",
-    price: "€2,250",
+    name: "Jamawar Stole",
+    category: "Stoles",
+    price: "₹8,900",
     image: lintelImage,
   },
   {
     id: 6,
-    name: "Shadowline",
-    category: "Bracelets",
-    price: "€3,950",
+    name: "Pure Silk Carpet",
+    category: "Carpets",
+    price: "₹1,25,000",
     image: shadowlineImage,
   },
 ];
@@ -93,7 +93,7 @@ const ProductCarousel = () => {
                           className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
                         />
                         <img
-                          src={product.category === "Earrings" ? organicEarring : linkBracelet}
+                          src={product.category === "Shawls" || product.category === "Stoles" ? organicEarring : linkBracelet}
                           alt={`${product.name} lifestyle`}
                           className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
                         />

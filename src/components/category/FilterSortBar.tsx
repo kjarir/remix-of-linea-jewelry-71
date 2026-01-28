@@ -28,9 +28,9 @@ interface FilterSortBarProps {
 const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBarProps) => {
   const [sortBy, setSortBy] = useState("featured");
 
-  const categories = ["Earrings", "Bracelets", "Rings", "Necklaces"];
-  const priceRanges = ["Under €1,000", "€1,000 - €2,000", "€2,000 - €3,000", "Over €3,000"];
-  const materials = ["Gold", "Silver", "Rose Gold", "Platinum"];
+  const categories = ["Shawls", "Kurtas", "Carpets", "Stoles", "Phirans"];
+  const priceRanges = ["Under ₹10,000", "₹10,000 - ₹25,000", "₹25,000 - ₹50,000", "Over ₹50,000"];
+  const materials = ["Pashmina", "Silk", "Wool", "Cotton"];
 
   return (
     <>

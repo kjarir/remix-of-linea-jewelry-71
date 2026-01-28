@@ -28,27 +28,27 @@ const Navigation = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: 1,
-      name: "Pantheon",
-      price: "€2,850",
+      name: "Pashmina Shawl",
+      price: "₹12,500",
       image: pantheonImage,
       quantity: 1,
-      category: "Earrings"
+      category: "Shawls"
     },
     {
       id: 2,
-      name: "Eclipse",
-      price: "€3,200", 
+      name: "Silk Kurta",
+      price: "₹8,900", 
       image: eclipseImage,
       quantity: 1,
-      category: "Bracelets"
+      category: "Kurtas"
     },
     {
       id: 3,
-      name: "Halo",
-      price: "€1,950",
+      name: "Handwoven Carpet",
+      price: "₹45,000",
       image: haloImage, 
       quantity: 1,
-      category: "Earrings"
+      category: "Carpets"
     }
   ]);
 
@@ -83,12 +83,12 @@ const Navigation = () => {
   }, []);
 
   const popularSearches = [
-    "Gold Rings",
-    "Silver Necklaces", 
-    "Pearl Earrings",
-    "Designer Bracelets",
-    "Wedding Rings",
-    "Vintage Collection"
+    "Pashmina Shawls",
+    "Kashmiri Kurtas", 
+    "Silk Carpets",
+    "Embroidered Stoles",
+    "Wedding Collection",
+    "Winter Shawls"
   ];
   
   const navItems = [
@@ -96,15 +96,15 @@ const Navigation = () => {
       name: "Shop", 
       href: "/category/shop",
       submenuItems: [
-        "Rings",
-        "Necklaces", 
-        "Earrings",
-        "Bracelets",
-        "Watches"
+        "Shawls",
+        "Kurtas", 
+        "Carpets",
+        "Stoles",
+        "Phirans"
       ],
       images: [
-        { src: "/rings-collection.png", alt: "Rings Collection", label: "Rings" },
-        { src: "/earrings-collection.png", alt: "Earrings Collection", label: "Earrings" }
+        { src: "/rings-collection.png", alt: "Shawls Collection", label: "Shawls" },
+        { src: "/earrings-collection.png", alt: "Kurtas Collection", label: "Kurtas" }
       ]
     },
     { 
@@ -112,14 +112,14 @@ const Navigation = () => {
       href: "/category/new-in",
       submenuItems: [
         "This Week's Arrivals",
-        "Spring Collection",
-        "Featured Designers",
+        "Winter Collection",
+        "Featured Artisans",
         "Limited Edition",
         "Pre-Orders"
       ],
       images: [
-        { src: "/arcus-bracelet.png", alt: "Arcus Bracelet", label: "Arcus Bracelet" },
-        { src: "/span-bracelet.png", alt: "Span Bracelet", label: "Span Bracelet" }
+        { src: "/arcus-bracelet.png", alt: "Pashmina Shawl", label: "Pashmina Shawl" },
+        { src: "/span-bracelet.png", alt: "Silk Carpet", label: "Silk Carpet" }
       ]
     },
     { 
@@ -133,7 +133,7 @@ const Navigation = () => {
         "Store Locator"
       ],
       images: [
-        { src: "/founders.png", alt: "Company Founders", label: "Read our story" }
+        { src: "/founders.png", alt: "Our Artisans", label: "Read our story" }
       ]
     }
   ];
@@ -188,11 +188,7 @@ const Navigation = () => {
         {/* Center logo */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <Link to="/" className="block">
-            <img 
-              src="/LINEA-1.svg" 
-              alt="LINEA" 
-              className="h-6 w-auto"
-            />
+            <span className="text-xl font-light tracking-wide text-foreground">Mannat Shawl's</span>
           </Link>
         </div>
 
@@ -268,11 +264,11 @@ const Navigation = () => {
                     // Determine the link destination based on dropdown and image
                     let linkTo = "/";
                     if (activeDropdown === "Shop") {
-                      if (image.label === "Rings") linkTo = "/category/rings";
-                      else if (image.label === "Earrings") linkTo = "/category/earrings";
+                      if (image.label === "Shawls") linkTo = "/category/shawls";
+                      else if (image.label === "Kurtas") linkTo = "/category/kurtas";
                     } else if (activeDropdown === "New in") {
-                      if (image.label === "Arcus Bracelet") linkTo = "/product/arcus-bracelet";
-                      else if (image.label === "Span Bracelet") linkTo = "/product/span-bracelet";
+                      if (image.label === "Pashmina Shawl") linkTo = "/product/pashmina-shawl";
+                      else if (image.label === "Silk Carpet") linkTo = "/product/silk-carpet";
                     } else if (activeDropdown === "About") {
                       linkTo = "/about/our-story";
                     }
@@ -314,7 +310,7 @@ const Navigation = () => {
                   </svg>
                   <input
                     type="text"
-                    placeholder="Search for jewelry..."
+                    placeholder="Search for shawls, kurtas, carpets..."
                     className="flex-1 bg-transparent text-nav-foreground placeholder:text-nav-foreground/60 outline-none text-lg"
                     autoFocus
                   />
