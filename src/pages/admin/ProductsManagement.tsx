@@ -38,7 +38,7 @@ interface Product {
   is_featured?: boolean;
   stock_quantity?: number;
   category?: { name: string };
-  product_images?: { id: string; image_url: string; is_primary: boolean }[];
+  product_images?: { id: string; image_url: string; is_primary: boolean; display_order?: number }[];
 }
 
 interface Category {
