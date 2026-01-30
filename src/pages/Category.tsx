@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import CategoryHeader from "../components/category/CategoryHeader";
@@ -8,8 +8,8 @@ import ProductGrid from "../components/category/ProductGrid";
 
 const Category = () => {
   const { category } = useParams();
-  const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [itemCount, setItemCount] = useState(0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,16 +17,16 @@ const Category = () => {
       
       <main className="pt-6">
         <CategoryHeader 
-          category={category || 'All Products'} 
+          category={category || 'all'} 
         />
         
         <FilterSortBar 
           filtersOpen={filtersOpen}
           setFiltersOpen={setFiltersOpen}
-          itemCount={24}
+          itemCount={itemCount}
         />
         
-        <ProductGrid />
+        <ProductGrid onItemCountChange={setItemCount} />
       </main>
       
       <Footer />

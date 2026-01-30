@@ -1,71 +1,57 @@
-import { ArrowRight, X, Minus, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import ShoppingBag from "./ShoppingBag";
-import pantheonImage from "@/assets/pantheon.jpg";
-import eclipseImage from "@/assets/eclipse.jpg";
-import haloImage from "@/assets/halo.jpg";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: string;
-  image: string;
-  quantity: number;
-  category: string;
-}
+import { ArrowRight, X } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/hooks/useFavorites";
+import { supabase } from "@/lib/supabaseClient";
 
 const Navigation = () => {
+  const { user, isAdmin, signOut, profile } = useAuth();
+  const { favorites } = useFavorites();
+  const navigate = useNavigate();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [offCanvasType, setOffCanvasType] = useState<'favorites' | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isShoppingBagOpen, setIsShoppingBagOpen] = useState(false);
+  const [favoriteProducts, setFavoriteProducts] = useState<any[]>([]);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   
-  // Shopping bag state with 3 mock items
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Pashmina Shawl",
-      price: "₹12,500",
-      image: pantheonImage,
-      quantity: 1,
-      category: "Shawls"
-    },
-    {
-      id: 2,
-      name: "Silk Kurta",
-      price: "₹8,900", 
-      image: eclipseImage,
-      quantity: 1,
-      category: "Kurtas"
-    },
-    {
-      id: 3,
-      name: "Handwoven Carpet",
-      price: "₹45,000",
-      image: haloImage, 
-      quantity: 1,
-      category: "Carpets"
-    }
-  ]);
-
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      setCartItems(items => items.filter(item => item.id !== id));
+  // Fetch favorite products when favorites panel opens
+  useEffect(() => {
+    if (offCanvasType === 'favorites' && favorites.length > 0) {
+      fetchFavoriteProducts();
     } else {
-      setCartItems(items => 
-        items.map(item => 
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      setFavoriteProducts([]);
+    }
+  }, [offCanvasType, favorites]);
+
+  const fetchFavoriteProducts = async () => {
+    if (favorites.length === 0) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name, price_cents, slug, product_images(image_url, is_primary)")
+        .in("id", favorites)
+        .eq("is_active", true);
+
+      if (error) throw error;
+
+      const productsWithImages = data?.map((product) => {
+        const primaryImage = product.product_images?.find((img: any) => img.is_primary);
+        return {
+          ...product,
+          image_url: primaryImage?.image_url || product.product_images?.[0]?.image_url || "/placeholder.svg",
+          price: `₹${(product.price_cents / 100).toLocaleString()}`,
+        };
+      });
+
+      setFavoriteProducts(productsWithImages || []);
+    } catch (error) {
+      console.error("Error fetching favorite products:", error);
     }
   };
-  
+
   // Preload dropdown images for faster display
   useEffect(() => {
     const imagesToPreload = [
@@ -91,36 +77,99 @@ const Navigation = () => {
     "Winter Shawls"
   ];
   
-  const navItems = [
+  const [categories, setCategories] = useState<{ id: string; name: string; slug: string; image_url: string | null }[]>([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      // Try full query with all columns first
+      let { data, error } = await supabase
+        .from("categories")
+        .select("id, name, slug, image_url")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+      
+      if (!error) {
+        setCategories(data || []);
+        return;
+      }
+      
+      // If error, try without image_url
+      if (error.message?.includes('image_url')) {
+        ({ data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .eq("is_active", true)
+          .order("display_order", { ascending: true }));
+      }
+      
+      if (!error) {
+        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
+        return;
+      }
+      
+      // If error, try without is_active filter
+      if (error.message?.includes('is_active')) {
+        ({ data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .order("display_order", { ascending: true }));
+      }
+      
+      if (!error) {
+        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
+        return;
+      }
+      
+      // If error, try without display_order
+      if (error.message?.includes('display_order')) {
+        ({ data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .order("created_at", { ascending: true }));
+      }
+      
+      if (!error) {
+        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
+        return;
+      }
+      
+      // Last resort: basic select
+      ({ data } = await supabase.from("categories").select("id, name, slug"));
+      setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setCategories([]);
+    }
+  };
+
+  const navItems = useMemo(() => [
     { 
       name: "Shop", 
-      href: "/category/shop",
-      submenuItems: [
-        "Shawls",
-        "Kurtas", 
-        "Carpets",
-        "Stoles",
-        "Phirans"
-      ],
-      images: [
-        { src: "/rings-collection.png", alt: "Shawls Collection", label: "Shawls" },
-        { src: "/earrings-collection.png", alt: "Kurtas Collection", label: "Kurtas" }
-      ]
+      href: "/category/all",
+      submenuItems: categories.length > 0 ? categories.map(cat => cat.name) : [],
+      images: categories.length > 0 
+        ? categories.slice(0, 2).map(cat => ({
+            src: cat.image_url || "/placeholder.svg",
+            alt: `${cat.name} Collection`,
+            label: cat.name
+          }))
+        : []
     },
     { 
       name: "New in", 
-      href: "/category/new-in",
-      submenuItems: [
-        "This Week's Arrivals",
-        "Winter Collection",
-        "Featured Artisans",
-        "Limited Edition",
-        "Pre-Orders"
-      ],
-      images: [
-        { src: "/arcus-bracelet.png", alt: "Pashmina Shawl", label: "Pashmina Shawl" },
-        { src: "/span-bracelet.png", alt: "Silk Carpet", label: "Silk Carpet" }
-      ]
+      href: "/category/all",
+      submenuItems: categories.length > 0 ? categories.map(cat => cat.name) : [],
+      images: categories.length > 0 
+        ? categories.slice(0, 2).map(cat => ({
+            src: cat.image_url || "/placeholder.svg",
+            alt: `${cat.name} Collection`,
+            label: cat.name
+          }))
+        : []
     },
     { 
       name: "About", 
@@ -136,7 +185,7 @@ const Navigation = () => {
         { src: "/founders.png", alt: "Our Artisans", label: "Read our story" }
       ]
     }
-  ];
+  ], [categories]);
 
   return (
     <nav 
@@ -204,28 +253,107 @@ const Navigation = () => {
             </svg>
           </button>
           <button 
-            className="hidden lg:block p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
+            className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
             aria-label="Favorites"
-            onClick={() => setOffCanvasType('favorites')}
+            onClick={() => {
+              if (user) {
+                setOffCanvasType('favorites');
+              } else {
+                navigate('/login');
+              }
+            }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill={favorites.length > 0 ? "currentColor" : "none"} 
+              viewBox="0 0 24 24" 
+              strokeWidth="1.5" 
+              stroke="currentColor" 
+              className="w-5 h-5"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
             </svg>
-          </button>
-          <button 
-            className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
-            aria-label="Shopping bag"
-            onClick={() => setIsShoppingBagOpen(true)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-            </svg>
-            {totalItems > 0 && (
-              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[30%] text-[0.5rem] font-semibold text-black pointer-events-none">
-                {totalItems}
-              </span>
+            {favorites.length > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             )}
           </button>
+          {user ? (
+            <div className="relative">
+              <button 
+                className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
+                aria-label="Account"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAccountMenuOpen(!isAccountMenuOpen);
+                }}
+                onBlur={(e) => {
+                  // Don't close if clicking inside the dropdown
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setTimeout(() => setIsAccountMenuOpen(false), 200);
+                  }
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+              </button>
+              {isAccountMenuOpen && (
+                <div 
+                  className="absolute right-0 top-full mt-2 w-48 bg-background border border-border shadow-lg z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="py-2">
+                    {(isAdmin || profile?.is_admin) && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                        className="block px-4 py-2 text-sm text-nav-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <Link
+                      to="/favorites"
+                      onClick={() => setIsAccountMenuOpen(false)}
+                      className="block px-4 py-2 text-sm text-nav-foreground hover:bg-muted/50 transition-colors"
+                    >
+                      My Favorites
+                    </Link>
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsAccountMenuOpen(false);
+                        
+                        try {
+                          await signOut();
+                        } catch (error) {
+                          console.error("Error signing out:", error);
+                        }
+                        
+                        // Always navigate and reload regardless of signOut result
+                        navigate('/', { replace: true });
+                        setTimeout(() => {
+                          window.location.href = '/';
+                        }, 100);
+                      }}
+                      type="button"
+                      className="w-full text-left px-4 py-2 text-sm text-nav-foreground hover:bg-muted/50 transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="px-4 py-2 text-sm text-nav-foreground hover:text-nav-hover transition-colors duration-200"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
 
@@ -245,12 +373,28 @@ const Navigation = () => {
                      .find(item => item.name === activeDropdown)
                      ?.submenuItems.map((subItem, index) => (
                       <li key={index}>
-                        <Link 
-                          to={activeDropdown === "About" ? `/about/${subItem.toLowerCase().replace(/\s+/g, '-')}` : `/category/${subItem.toLowerCase()}`}
-                          className="text-nav-foreground hover:text-nav-hover transition-colors duration-200 text-sm font-light block py-2"
-                        >
-                          {subItem}
-                        </Link>
+                        {activeDropdown === "Shop" ? (
+                          <Link 
+                            to={`/category/${categories.find(c => c.name === subItem)?.slug || subItem.toLowerCase()}`}
+                            className="text-nav-foreground hover:text-nav-hover transition-colors duration-200 text-sm font-light block py-2"
+                          >
+                            {subItem}
+                          </Link>
+                        ) : activeDropdown === "About" ? (
+                          <Link 
+                            to={`/about/${subItem.toLowerCase().replace(/\s+/g, '-')}`}
+                            className="text-nav-foreground hover:text-nav-hover transition-colors duration-200 text-sm font-light block py-2"
+                          >
+                            {subItem}
+                          </Link>
+                        ) : (
+                          <Link 
+                            to={`/category/${subItem.toLowerCase()}`}
+                            className="text-nav-foreground hover:text-nav-hover transition-colors duration-200 text-sm font-light block py-2"
+                          >
+                            {subItem}
+                          </Link>
+                        )}
                       </li>
                    ))}
                 </ul>
@@ -264,11 +408,10 @@ const Navigation = () => {
                     // Determine the link destination based on dropdown and image
                     let linkTo = "/";
                     if (activeDropdown === "Shop") {
-                      if (image.label === "Shawls") linkTo = "/category/shawls";
-                      else if (image.label === "Kurtas") linkTo = "/category/kurtas";
+                      const category = categories.find(c => c.name === image.label);
+                      linkTo = category ? `/category/${category.slug}` : "/category/all";
                     } else if (activeDropdown === "New in") {
-                      if (image.label === "Pashmina Shawl") linkTo = "/product/pashmina-shawl";
-                      else if (image.label === "Silk Carpet") linkTo = "/product/silk-carpet";
+                      linkTo = "/category/all";
                     } else if (activeDropdown === "About") {
                       linkTo = "/about/our-story";
                     }
@@ -351,16 +494,25 @@ const Navigation = () => {
                     {item.name}
                   </Link>
                    <div className="mt-3 pl-4 space-y-2">
-                     {item.submenuItems.map((subItem, subIndex) => (
-                       <Link
-                         key={subIndex}
-                         to={item.name === "About" ? `/about/${subItem.toLowerCase().replace(/\s+/g, '-')}` : `/category/${subItem.toLowerCase()}`}
-                         className="text-nav-foreground/70 hover:text-nav-hover text-sm font-light block py-1"
-                         onClick={() => setIsMobileMenuOpen(false)}
-                       >
-                         {subItem}
-                       </Link>
-                     ))}
+                     {item.submenuItems.map((subItem, subIndex) => {
+                       const category = categories.find(c => c.name === subItem);
+                       const linkTo = item.name === "About" 
+                         ? `/about/${subItem.toLowerCase().replace(/\s+/g, '-')}` 
+                         : category 
+                           ? `/category/${category.slug}` 
+                           : `/category/${subItem.toLowerCase()}`;
+                       
+                       return (
+                         <Link
+                           key={subIndex}
+                           to={linkTo}
+                           className="text-nav-foreground/70 hover:text-nav-hover text-sm font-light block py-1"
+                           onClick={() => setIsMobileMenuOpen(false)}
+                         >
+                           {subItem}
+                         </Link>
+                       );
+                     })}
                    </div>
                 </div>
               ))}
@@ -368,18 +520,6 @@ const Navigation = () => {
           </div>
         </div>
       )}
-      
-      {/* Shopping Bag Component */}
-      <ShoppingBag 
-        isOpen={isShoppingBagOpen}
-        onClose={() => setIsShoppingBagOpen(false)}
-        cartItems={cartItems}
-        updateQuantity={updateQuantity}
-        onViewFavorites={() => {
-          setIsShoppingBagOpen(false);
-          setOffCanvasType('favorites');
-        }}
-      />
       
       {/* Favorites Off-canvas overlay */}
       {offCanvasType === 'favorites' && (
@@ -405,10 +545,63 @@ const Navigation = () => {
             </div>
             
             {/* Content */}
-            <div className="p-6">
-              <p className="text-muted-foreground text-sm mb-6">
-                You haven't added any favorites yet. Browse our collection and click the heart icon to save items you love.
-              </p>
+            <div className="flex-1 overflow-y-auto p-6">
+              {favoriteProducts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12 text-muted-foreground mb-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                  </svg>
+                  <p className="text-muted-foreground text-sm mb-2">
+                    You haven't added any favorites yet.
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    Browse our collection and click the heart icon to save items you love.
+                  </p>
+                  <Link
+                    to="/category/carpets"
+                    onClick={() => setOffCanvasType(null)}
+                    className="mt-4 text-sm text-nav-foreground hover:text-nav-hover underline"
+                  >
+                    Start Shopping
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {favoriteProducts.map((product) => (
+                    <Link
+                      key={product.id}
+                      to={`/product/${product.slug}`}
+                      onClick={() => setOffCanvasType(null)}
+                      className="flex gap-4 group"
+                    >
+                      <div className="w-20 h-20 bg-muted/10 rounded-lg overflow-hidden flex-shrink-0">
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-foreground group-hover:underline truncate">
+                          {product.name}
+                        </h3>
+                        <p className="text-sm font-light text-muted-foreground mt-1">
+                          {product.price}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="pt-4 border-t border-border">
+                    <Link
+                      to="/favorites"
+                      onClick={() => setOffCanvasType(null)}
+                      className="block text-center text-sm text-nav-foreground hover:text-nav-hover underline"
+                    >
+                      View All Favorites
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

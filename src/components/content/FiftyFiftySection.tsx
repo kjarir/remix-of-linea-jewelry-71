@@ -1,5 +1,3 @@
-import earringsCollection from "@/assets/earrings-collection.png";
-import linkBracelet from "@/assets/link-bracelet.png";
 import { Link } from "react-router-dom";
 
 const FiftyFiftySection = () => {
@@ -10,7 +8,7 @@ const FiftyFiftySection = () => {
           <Link to="/category/shawls" className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
               <img 
-                src={earringsCollection} 
+                src="/categories/1bc9bff95c54ef39ed37cbc5c7a9a4ab.jpg" 
                 alt="Pashmina Shawls collection" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -21,7 +19,7 @@ const FiftyFiftySection = () => {
               Pashmina Collection
             </h3>
             <p className="text-sm font-light text-foreground">
-              Hand-spun luxury from the finest Changthangi goat wool
+              Hand-spun luxury from the finest Changthangi goat wool. Exquisite Sozni and Kani embroidery on premium Pashmina shawls.
             </p>
           </div>
         </div>
@@ -30,7 +28,7 @@ const FiftyFiftySection = () => {
           <Link to="/category/carpets" className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
               <img 
-                src={linkBracelet} 
+                src="/categories/2b314e370d807cbe26a3e817c244c755.jpg" 
                 alt="Kashmiri Carpets collection" 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -41,7 +39,7 @@ const FiftyFiftySection = () => {
               Handwoven Carpets
             </h3>
             <p className="text-sm font-light text-foreground">
-              Centuries-old weaving traditions in silk and wool
+              Centuries-old weaving traditions in silk and wool. Each carpet is a masterpiece of Kashmiri craftsmanship.
             </p>
           </div>
         </div>

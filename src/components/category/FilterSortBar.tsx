@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/lib/supabaseClient";
+import { Link } from "react-router-dom";
 
 interface FilterSortBarProps {
   filtersOpen: boolean;
@@ -25,10 +27,75 @@ interface FilterSortBarProps {
   itemCount: number;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBarProps) => {
   const [sortBy, setSortBy] = useState("featured");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ["Shawls", "Kurtas", "Carpets", "Stoles", "Phirans"];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      // Try full query with all columns first
+      let { data, error } = await supabase
+        .from("categories")
+        .select("id, name, slug")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
+      
+      if (!error) {
+        setCategories(data || []);
+        setLoading(false);
+        return;
+      }
+      
+      // If error, try without is_active filter
+      if (error.message?.includes('is_active')) {
+        ({ data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .order("display_order", { ascending: true }));
+      }
+      
+      if (!error) {
+        setCategories(data || []);
+        setLoading(false);
+        return;
+      }
+      
+      // If error, try without display_order
+      if (error.message?.includes('display_order')) {
+        ({ data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .order("created_at", { ascending: true }));
+      }
+      
+      if (!error) {
+        setCategories(data || []);
+        setLoading(false);
+        return;
+      }
+      
+      // Last resort: basic select
+      ({ data } = await supabase.from("categories").select("id, name, slug"));
+      setCategories(data || []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const priceRanges = ["Under ₹10,000", "₹10,000 - ₹25,000", "₹25,000 - ₹50,000", "Over ₹50,000"];
   const materials = ["Pashmina", "Silk", "Wool", "Cotton"];
 
@@ -37,7 +104,7 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBar
       <section className="w-full px-6 mb-8 border-b border-border pb-4">
         <div className="flex justify-between items-center">
           <p className="text-sm font-light text-muted-foreground">
-            {itemCount} items
+            {itemCount} {itemCount === 1 ? 'item' : 'items'}
           </p>
           
           <div className="flex items-center gap-4">
@@ -60,16 +127,31 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBar
                   {/* Category Filter */}
                   <div>
                     <h3 className="text-sm font-light mb-4 text-foreground">Category</h3>
-                    <div className="space-y-3">
-                      {categories.map((category) => (
-                        <div key={category} className="flex items-center space-x-3">
-                          <Checkbox id={category} className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground" />
-                          <Label htmlFor={category} className="text-sm font-light text-foreground cursor-pointer">
-                            {category}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
+                    {loading ? (
+                      <div className="space-y-3">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="h-5 bg-muted animate-pulse"></div>
+                        ))}
+                      </div>
+                    ) : categories.length > 0 ? (
+                      <div className="space-y-3">
+                        {categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            to={`/category/${category.slug}`}
+                            className="flex items-center space-x-3 hover:text-primary transition-colors"
+                            onClick={() => setFiltersOpen(false)}
+                          >
+                            <Checkbox id={category.id} className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground" />
+                            <Label htmlFor={category.id} className="text-sm font-light text-foreground cursor-pointer">
+                              {category.name}
+                            </Label>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No categories available</p>
+                    )}
                   </div>
 
                   <Separator className="border-border" />

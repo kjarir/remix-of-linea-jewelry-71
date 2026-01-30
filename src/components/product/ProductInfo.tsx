@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Breadcrumb, 
@@ -9,13 +9,73 @@ import {
   BreadcrumbPage, 
   BreadcrumbSeparator 
 } from "@/components/ui/breadcrumb";
-import { Minus, Plus } from "lucide-react";
+import { Heart } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProductInfo = () => {
-  const [quantity, setQuantity] = useState(1);
+  const { productId } = useParams<{ productId: string }>();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
-  const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  useEffect(() => {
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
+
+  const fetchProduct = async () => {
+    try {
+      // Fetch product first (without nested relation)
+      const { data: productData, error: productError } = await supabase
+        .from("products")
+        .select("*")
+        .or(`slug.eq.${productId},id.eq.${productId}`)
+        .eq("is_active", true)
+        .single();
+
+      if (productError) throw productError;
+      
+      if (!productData) {
+        setLoading(false);
+        return;
+      }
+
+      // Fetch category separately if category_id exists
+      let category = null;
+      if (productData.category_id) {
+        const { data: categoryData } = await supabase
+          .from("categories")
+          .select("id, name, slug")
+          .eq("id", productData.category_id)
+          .single();
+        
+        category = categoryData || null;
+      }
+
+      setProduct({
+        ...productData,
+        category,
+      });
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLikeClick = () => {
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+    if (product) {
+      toggleFavorite(product.id);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -29,31 +89,52 @@ const ProductInfo = () => {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/category/shawls">Shawls</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
+            {product?.category && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/category/${product.category.slug}`}>{product.category.name}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            )}
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Kani Pashmina</BreadcrumbPage>
+              <BreadcrumbPage>{product?.name || "Product"}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      {/* Product title and price */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm font-light text-muted-foreground mb-1">Shawls</p>
-            <h1 className="text-2xl md:text-3xl font-light text-foreground">Kani Pashmina</h1>
-          </div>
-          <div className="text-right">
-            <p className="text-xl font-light text-foreground">₹28,500</p>
-          </div>
+      {loading ? (
+        <div className="space-y-4">
+          <div className="h-8 bg-muted animate-pulse"></div>
+          <div className="h-6 bg-muted animate-pulse w-1/2"></div>
         </div>
-      </div>
+      ) : product ? (
+        <>
+          {/* Product title and price */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-sm font-light text-muted-foreground mb-1">
+                  {product.category?.name || "Product"}
+                </p>
+                <h1 className="text-2xl md:text-3xl font-light text-foreground">{product.name}</h1>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-light text-foreground">
+                  ₹{(product.price_cents / 100).toLocaleString()}
+                </p>
+                {product.compare_at_price_cents && (
+                  <p className="text-sm text-muted-foreground line-through">
+                    ₹{(product.compare_at_price_cents / 100).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
 
       {/* Product details */}
       <div className="space-y-4 py-4 border-b border-border">
@@ -78,39 +159,25 @@ const ProductInfo = () => {
         </div>
       </div>
 
-      {/* Quantity and Add to Cart */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-light text-foreground">Quantity</span>
-          <div className="flex items-center border border-border">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={decrementQuantity}
-              className="h-10 w-10 p-0 hover:bg-transparent hover:opacity-50 rounded-none border-none"
+          {/* Like Button */}
+          <div className="space-y-4 pt-4">
+            <Button 
+              variant="outline"
+              className="w-full h-12 border-foreground text-foreground hover:bg-foreground hover:text-background font-light rounded-none flex items-center justify-center gap-2"
+              onClick={handleLikeClick}
             >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="h-10 flex items-center px-4 text-sm font-light min-w-12 justify-center border-l border-r border-border">
-              {quantity}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={incrementQuantity}
-              className="h-10 w-10 p-0 hover:bg-transparent hover:opacity-50 rounded-none border-none"
-            >
-              <Plus className="h-4 w-4" />
+              <Heart 
+                className={`h-5 w-5 ${product && isFavorite(product.id) ? 'fill-current' : ''}`}
+              />
+              {product && isFavorite(product.id) ? 'Liked' : 'Like this Product'}
             </Button>
           </div>
+        </>
+      ) : (
+        <div className="text-center py-8 text-muted-foreground">
+          Product not found
         </div>
-
-        <Button 
-          className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 font-light rounded-none"
-        >
-          Add to Bag
-        </Button>
-      </div>
+      )}
     </div>
   );
 };
