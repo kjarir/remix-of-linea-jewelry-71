@@ -86,60 +86,33 @@ const Navigation = () => {
   const fetchCategories = async () => {
     try {
       // Try full query with all columns first
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("categories")
         .select("id, name, slug, image_url")
         .eq("is_active", true)
         .order("display_order", { ascending: true });
       
-      if (!error) {
-        setCategories(data || []);
+      if (!error && data) {
+        setCategories(data.map((cat: any) => ({ 
+          id: cat.id, 
+          name: cat.name, 
+          slug: cat.slug, 
+          image_url: cat.image_url || null 
+        })));
         return;
       }
       
-      // If error, try without image_url
-      if (error.message?.includes('image_url')) {
-        ({ data, error } = await supabase
-          .from("categories")
-          .select("id, name, slug")
-          .eq("is_active", true)
-          .order("display_order", { ascending: true }));
-      }
+      // Fallback: basic query
+      const { data: fallbackData } = await supabase
+        .from("categories")
+        .select("id, name, slug");
       
-      if (!error) {
-        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
-        return;
-      }
-      
-      // If error, try without is_active filter
-      if (error.message?.includes('is_active')) {
-        ({ data, error } = await supabase
-          .from("categories")
-          .select("id, name, slug")
-          .order("display_order", { ascending: true }));
-      }
-      
-      if (!error) {
-        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
-        return;
-      }
-      
-      // If error, try without display_order
-      if (error.message?.includes('display_order')) {
-        ({ data, error } = await supabase
-          .from("categories")
-          .select("id, name, slug")
-          .order("created_at", { ascending: true }));
-      }
-      
-      if (!error) {
-        setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
-        return;
-      }
-      
-      // Last resort: basic select
-      ({ data } = await supabase.from("categories").select("id, name, slug"));
-      setCategories((data || []).map(cat => ({ ...cat, image_url: null })));
+      setCategories((fallbackData || []).map((cat: any) => ({ 
+        id: cat.id, 
+        name: cat.name, 
+        slug: cat.slug, 
+        image_url: null 
+      })));
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
